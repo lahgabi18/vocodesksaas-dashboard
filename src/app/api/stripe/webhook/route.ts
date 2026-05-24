@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
       // ── Paiement réussi (ou essai démarré) ──────────────────────────────────
       case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.CheckoutSession
+        const session = event.data.object as Stripe.Checkout.Session
         const clientId = session.metadata?.client_id
         if (!clientId) break
 
