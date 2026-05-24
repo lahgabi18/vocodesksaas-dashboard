@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
@@ -108,6 +108,21 @@ function CallCard({ call }: { call: Call }) {
   )
 }
 
+function CheckoutBanner() {
+  const searchParams = useSearchParams()
+  const checkoutSuccess = searchParams.get('checkout') === 'success'
+  if (!checkoutSuccess) return null
+  return (
+    <div className="mb-6 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-xl px-5 py-4 flex items-center gap-3">
+      <span className="text-xl">🎉</span>
+      <div>
+        <div className="font-semibold text-sm">Essai gratuit activé !</div>
+        <div className="text-xs text-emerald-400/70 mt-0.5">Votre assistante sera active sous 24h le temps qu&apos;un numéro vous soit attribué.</div>
+      </div>
+    </div>
+  )
+}
+
 export default function DashboardPage() {
   const [client, setClient] = useState<Client | null>(null)
   const [calls, setCalls] = useState<Call[]>([])
@@ -115,8 +130,6 @@ export default function DashboardPage() {
   const [filter, setFilter] = useState<'all' | 'completed' | 'missed'>('all')
   const [notification, setNotification] = useState<string | null>(null)
   const [clientId, setClientId] = useState<string | null>(null)
-  const searchParams = useSearchParams()
-  const checkoutSuccess = searchParams.get('checkout') === 'success'
 
   useEffect(() => {
     async function load() {
@@ -212,15 +225,9 @@ export default function DashboardPage() {
       )}
 
       {/* Banner succès paiement */}
-      {checkoutSuccess && (
-        <div className="mb-6 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 rounded-xl px-5 py-4 flex items-center gap-3">
-          <span className="text-xl">🎉</span>
-          <div>
-            <div className="font-semibold text-sm">Essai gratuit activé !</div>
-            <div className="text-xs text-emerald-400/70 mt-0.5">Votre assistante sera active sous 24h le temps qu'un numéro vous soit attribué.</div>
-          </div>
-        </div>
-      )}
+      <Suspense fallback={null}>
+        <CheckoutBanner />
+      </Suspense>
 
       {/* Header */}
       <div className="mb-8">
